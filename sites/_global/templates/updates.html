@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %} Updates on {{ site.TITLE}} {% endblock %}
+{% block content %}
+<div class="header">
+  <h1><a href="/" title="Nick Wynja">Nick Wynja</a></h1>
+  <h2>Updates</h2>
+  <p>This page lists all the status updates I've posted to my site. Some appeared under the "Currently" section. You can <a href="/updates.atom">subscribe</a> to these updates or follow along on <a href="http://micro.blog/nickwynja">micro.blog</a>.</p>
+</div>
+<div class="page-body">
+  {% if updates %}
+  {% for group, list in updates.items() %}
+  {% for update in list%}
+
+    {% if update.featured %}
+
+    <div id="{{ update.date.strftime('%Y-%m-%d_%H%M%S') }}"
+         class="update-featured">
+         {{ update.html }}
+    </div>
+
+    {% else %}
+
+    <div id="{{ update.date.strftime('%Y-%m-%d_%H%M%S') }}"
+         class="update-regular">
+
+      {% if not loop.first %}
+        {% set prevdate = loop.previtem.date.strftime('%Y-%m-%d') %}
+        {% set date = update.date.strftime('%Y-%m-%d') %}
+        {% if date == prevdate %}
+
+          <div class="update-spacer"></div>
+
+        {% else %}
+
+          <date class="update-date">{{ update.date | datetime }}</date>
+
+        {% endif %}
+
+        {{ update.html }}
+
+      {% else %}
+
+        <date class="update-date">{{ update.date | datetime }}</date>
+
+        {{ update.html }}
+
+      {% endif %}
+
+    </div>
+
+    {% endif %}
+
+  {% endfor %}
+  {% endfor %}
+  {% else %}
+  <div><h2>No updates</h2></div>
+  {% endif %}
+</div>
+{% endblock %}
+
+

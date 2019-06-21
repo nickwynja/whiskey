@@ -1,0 +1,16 @@
+<div class="row" id="post-list">
+{% if posts %}
+{% for post in posts %}
+	<div class="col-xs-12">
+		<a class="post-list-item-link" href="{{ post.path }}.html" title="{{ post.title }}">
+			<h2 class="post-title">{{ post.title }}</h2>
+      <div class="list-item-description">
+        {% filter markdown %}<span class="lead-date">{{ post.date|datetime_month_year }}&nbsp;&bull;&nbsp;</span><span class="lead-content">{{post.description}}</span>{% endfilter %}
+      </div>
+	    </a>
+	</div>
+{% endfor %}
+{% else %}
+	<div><h2>No posts</h2></div>
+{% endif %}
+</div>
