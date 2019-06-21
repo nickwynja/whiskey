@@ -39,57 +39,61 @@ between multiple sites.
 ### Setup
 
 1. Run `make venv` to create a virtual environment and install the
-   requirements. `virtualenv` is required.
-1. In the root of the directory, add a new file called `.flaskenv`. This file will store some information about the app, but won't be version controlled.
+   requirements. [`virtualenv`](https://virtualenv.pypa.io/en/stable/) is required.
+1. In the root of the directory, create `.flaskenv`. This file will store some information about the app, but won't be version controlled.
 
-        FLASK_APP=whiskey
-        FLASK_ENV=development
-        WHISKEY_SITE=example
+       FLASK_APP=whiskey
+       FLASK_ENV=development
+       WHISKEY_SITE=example
 
-1. Create a new directory in `sites` called `example`.
-1. Create a new file called `site.conf` in `sites/example` and add this to
-   the file:
+1. Create a new directory in `sites/example`.
+1. In `sites/example`, create a file called `site.conf` and add this
+   to the file:
 
-        TITLE='Hello World'
-        BASE_URL='https://example.com'
-        BASE_NAME='example.com'
-        SITE_STYLE='static'
+       TITLE='Hello World'
+       BASE_URL='https://example.com'
+       BASE_NAME='example.com'
+       SITE_STYLE='static'
 
-1. Now, create a directory in sites called `content` and add the following
-   to `content/index.md`:
+1. Now, create a directory `sites/example/content` and create
+   `sites/example/content/index.md`:
 
-        ---
-        title: Hello World
-        ---
+       ---
+       title: Hello World
+       ---
 
-        Hi!
+       Hi!
 
 1. Run `flask run` and then navigate to
    [127.0.0.1:5000](http://127.0.0.1:5000). You should see a basic page
    that says "Hi!". Easy enough.
 1. Let's turn this static site into a blog. In `site.conf`, change
-   `SITE_STYLE` from `static` to `blog` and at the bottom of the file add:
+   `SITE_STYLE='static'` to `SITE_STYLE='blog'` and at the bottom of the
+   `site.conf` add:
 
-        POST_DIRECTORY="posts"
+       POST_DIRECTORY="posts"
 
 1. Create the directory `sites/example/content/posts`, and add a file called something like `first-post.md` with this content:
 
-        ---
-        title: Hello World
-        published: True
-        date: 2019-06-21 08:52:18
-        description: "Nice to meet you."
-        ---
+       ---
+       title: Hello World
+       published: True
+       date: 2019-06-21 08:52:18
+       description: "Nice to meet you."
+       ---
 
-        Hope we meet again.
+       Hope we meet again.
 
 1. Now, stop the `flask` server that's running and re-run it. Reload the page
    and you should now see a simple blog roll. Trying clicking on the blog post.
-2. Lets' change `SITE_STYLE` to be `hybrid` now. Re-run the `flask run` command
-   again and if reload, you'll now see your content from `index.md` above your
-   post blog roll.
-1. To "freeze" your site to static files, run `flask build` and look in `sites/example/build`. You should see the generated content of your site.
-1. If you have a server and have added the `DEPLOY` information (see below) to your `site.conf`, you can run `flask publish` to publish your static site to your server.
+1. Let's change `SITE_STYLE` to be `SITE_STYLE='hybrid'` now. Re-run the `flask
+   run` command again and if reload, you'll now see your content from
+   `index.md` above your post blog roll.
+1. To "freeze" your site to static files, run `flask build` and look in
+   `sites/example/build`. You should see the generated content of your site.
+1. If you have a server and have added the `DEPLOY` information (see below) to
+   your `site.conf`, you can run `flask publish` to publish your static site to
+   your server.
 
 ### Customizing Templates and Styles
 
