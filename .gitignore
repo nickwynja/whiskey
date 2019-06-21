@@ -1,6 +1,5 @@
 .DS_Store
 .flaskenv
-.editorconfig
 /sites/*/static/gen
 /build
 /sites/example
