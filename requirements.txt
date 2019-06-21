@@ -6,7 +6,6 @@ Flask==1.0.2
 Flask-Assets==0.12
 Flask-Babel==0.11.1
 -e git+https://github.com/nickwynja/Flask-FlatPages#egg=Flask_FlatPages
-Flask-Imagine==0.5
 Flask-Markdown==0.3
 -e git+https://github.com/nickwynja/Frozen-Flask#egg=Frozen-Flask
 Jinja2==2.10
