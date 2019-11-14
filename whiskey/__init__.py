@@ -16,7 +16,10 @@ app.config.from_pyfile('settings.py')
 assets = Environment(app)
 babel = Babel(app)
 flatpages = FlatPages(app)
-FlatPagesPandoc("markdown", app)
+FlatPagesPandoc(app.config['PANDOC_MD_FORMAT'],
+                app,
+                filters=app.config['PANDOC_FILTERS']
+                )
 freezer = Freezer(app)
 
 import whiskey.assets

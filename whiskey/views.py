@@ -118,15 +118,15 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
             u['html'] = helpers.pandoc_markdown(u['text'])
             d = u['date'].strftime('%Y-%m-%d')
             if d in date_ordered and u.get('featured') is True:
-                date_ordered[d].setdefault('featured',[]).insert(
+                date_ordered[d].setdefault('featured', []).insert(
                     len(date_ordered[d]['featured']), u
                 )
             elif d in date_ordered and u.get('featured') is not True:
-                date_ordered[d].setdefault('regular',[]).insert(
+                date_ordered[d].setdefault('regular', []).insert(
                     0, u
                 )
             elif u.get('featured') is True:
-                    date_ordered[d] = {'featured': [u]}
+                date_ordered[d] = {'featured': [u]}
             else:
                 date_ordered[d] = {'regular': [u]}
         return render_template('updates.html', updates=date_ordered,

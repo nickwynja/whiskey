@@ -7,12 +7,10 @@ app.static_folder = app.config['STATIC_FOLDER']
 
 _sass = Bundle(
 
-    '../../_global/styles/*.scss',
     '../styles/*.scss',
 
     filters='libsass',
     depends=(
-        '../../_global/styles/*.scss',
         '../styles/*.scss'
     ),
     output='gen/sass.%(version)s.css'
@@ -20,7 +18,6 @@ _sass = Bundle(
 
 all_css = Bundle(
 
-    '../../_global/styles/*.css',
     '../styles/*.css',
 
     _sass,
@@ -30,7 +27,7 @@ all_css = Bundle(
 
 assets.register('css_all', all_css)
 
-for files in os.walk('sites/%s/src/js/' % app.config['SITE_NAME']):
+for files in os.walk('/src/js/'):
     if files:
         js = Bundle('../src/js/*.js',
                     filters='jsmin',

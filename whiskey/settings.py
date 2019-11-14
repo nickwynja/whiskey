@@ -1,21 +1,22 @@
 from whiskey import app
 import os
 
-site_path = '%s/sites/%s' % (os.path.dirname(app.root_path),
-                             os.environ['WHISKEY_SITE'])
+site_path = '%s' % (os.getcwd())
 # Set defaults which can be overriden in site.conf
 app.config.update(
     TIMEZONE='US/Eastern',
     FEATURED_POSTS_COUNT=3,
     RECENT_POSTS_COUNT=10,
+    PANDOC_FILTERS=[],
+    PANDOC_MD_FORMAT="markdown"
 )
-app.config.from_pyfile('%s/site.conf' % site_path)
+app.config.from_pyfile('%s/.whiskeyconfig' % site_path)
 app.config.update(
-    SITE_NAME=os.environ['WHISKEY_SITE'],
+    SITE_NAME=app.config['TITLE'],
     CONTENT_PATH='%s/content' % site_path,
     BUILD_PATH='%s/build' % site_path,
-    STATIC_FOLDER='%s/static' % site_path,
-    TEMPLATE_PATH='%s/templates' % site_path,
+    STATIC_FOLDER='%s/src/static' % site_path,
+    TEMPLATE_PATH='%s/src/templates' % site_path,
     PUBLISH_MODE=False
 )
 

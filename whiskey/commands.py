@@ -45,8 +45,8 @@ def reload():
     """Runs a livereload server"""
     from livereload import Server
     server = Server(app.wsgi_app)
-    server.watch('sites/personal/content/resume.md', tasks.generate_resume_pdf)
-    server.watch('sites/%s/site.conf' % app.config['SITE_NAME'])
+    server.watch('%s/resume.md' % app.config['CONTENT_PATH'],
+                 tasks.generate_resume_pdf)
     server.watch(app.config['CONTENT_PATH'])
     server.serve(host='0.0.0.0', port=5000, debug=True)
 
@@ -65,7 +65,7 @@ def backup():
 
 @app.cli.command()
 @click.option('-o', '--output',
-              default="sites/personal/content/resume.pdf",
+              default="%s/resume.pdf" % app.config['CONTENT_PATH'],
               type=str)
 def resume(output):
     """Generates PDF of resume using pandoc"""

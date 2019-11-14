@@ -27,7 +27,7 @@ yaml.add_representer(literal_unicode, literal_unicode_representer)
 @task
 def deploy_using_rsync():
     try:
-        rsync_project(local_dir="./sites/%s/build/" % app.config['SITE_NAME'],
+        rsync_project(local_dir="%s/build/" % os.getcwd(),
                       remote_dir=app.config['DEPLOY_DIR'],
                       delete=True)
     finally:
@@ -44,10 +44,8 @@ def backup_using_fabric():
     today = datetime.datetime.now().strftime('%Y_%m_%d')
     build_tar = "/tmp/%s_build.tar.gz" % today
     content_tar = "/tmp/%s_content.tar.gz" % today
-    helpers.make_tarfile(build_tar, "./sites/%s/build/" %
-                         app.config['SITE_NAME'])
-    helpers.make_tarfile(content_tar, "./sites/%s/content/" %
-                         app.config['SITE_NAME'])
+    helpers.make_tarfile(build_tar, "%s/build" % os.getcwd())
+    helpers.make_tarfile(content_tar, "./content")
     puts("...done")
 
     try:
@@ -86,23 +84,28 @@ def freeze_to_build(skip_existing):
 
 
 @task
-def generate_resume_pdf(output="sites/personal/content/resume.pdf"):
+def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
     try:
         print(
             ("\033[0;33m[whiskey]:\033[0;0m "
              "Generating resume pdf with pandoc\n"
              "           to %s...         " % output),
             end="", flush=True)
+
+        filters = ""
+        for f in app.config['PANDOC_FILTERS_RESUME']:
+            filters += "--filter=%s" % f
+
         subprocess.check_output(
             ["pandoc",
              "-f", "markdown",
              "-t", "latex",
-             "--filter=align-right.py",
+             filters,
              "--pdf-engine=xelatex",
              "--variable=subparagraph",
-             "--template=sites/personal/templates/resume.tex",
+             "--template=%s/resume.tex" % app.config['TEMPLATE_PATH'],
              "--top-level-division=chapter",  # lets h2 to be heading
-             "sites/personal/content/resume.md",
+             "%s/resume.md" % app.config['CONTENT_PATH'],
              "-o", output
              ]
         )
@@ -127,8 +130,8 @@ def add_update(text, featured):
 @task
 def clean_assets():
     paths_to_clean = [
-        'sites/%s/static/.webassets-cache' % app.config['SITE_NAME'],
-        'sites/%s/static/gen' % app.config['SITE_NAME']
+        'src/static/.webassets-cache',
+        'src/static/gen',
     ]
     for path in paths_to_clean:
         if os.path.exists(path):

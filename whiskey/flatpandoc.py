@@ -31,7 +31,7 @@ class FlatPagesPandoc(object):
     Class that, when applied to a :class:`flask.Flask` instance,
     sets up an HTML renderer using pandoc.
     """
-    def __init__(self, source_format, app=None, pandoc_args=[],
+    def __init__(self, source_format, app=None, filters=[], pandoc_args=[],
                  pre_render=False):
         """
         Initializes Flask-FlatPages-Pandoc.
@@ -47,6 +47,7 @@ class FlatPagesPandoc(object):
         :type pre_render: boolean
         """
         self.source_format = source_format
+        self.filters = filters
         self.pandoc_args = pandoc_args
         self.pre_render = pre_render
 
@@ -76,30 +77,12 @@ class FlatPagesPandoc(object):
         if self.pre_render:
             text = render_template_string(Markup(text))
 
-        filters = [
-            "poetic",
-            "typographic",
-            "epigraph",
-            "books",
-        ]
-
-        extra_args = ['']
-
-        pandocver = int(pypandoc.get_pandoc_version()[0])
-
-        if pandocver < 2:
-            extra_args.append("-S")
-            format_str = "markdown+raw_tex+yaml_metadata_block"
-        else:
-            format_str = (
-                "markdown+raw_tex+smart+yaml_metadata_block+header_attributes"
-            )
-
         output = pypandoc.convert_text(
             text.encode("utf8"),
             'html',
-            format=format_str,
-            filters=filters
+            format=self.source_format,
+            extra_args=self.pandoc_args,
+            filters=self.filters
         )
 
         return output
