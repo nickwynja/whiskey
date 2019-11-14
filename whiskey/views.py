@@ -3,7 +3,7 @@ import os
 import re
 from whiskey import app, flatpages
 
-from whiskey import markdown, helpers
+from whiskey import helpers
 
 
 @app.context_processor
@@ -22,15 +22,9 @@ def index():
         ap = helpers.get_posts()
         featured_posts = fp[:int(app.config['FEATURED_POSTS_COUNT'])]
         all_posts = ap[:int(app.config['RECENT_POSTS_COUNT'])]
-        for idx, p in enumerate(featured_posts):
-            md = ("<div class=\"markdown-wrapper\""
-                  "markdown=\"span\">%s</div>" % p['description'])
-            setattr(featured_posts[idx],
-                    'description',
-                    markdown(md)
-                    )
         updates = helpers.get_updates(True)
         latest_update = updates[-1] if updates else None
+        latest_update['html'] = helpers.pandoc_markdown(latest_update['text'])
         return render_template('index_hybrid.html',
                                post=page,
                                directory=app.config['POST_DIRECTORY'],
@@ -95,31 +89,21 @@ def nested_content(name, ext, dir=None, year=None, month=None):
 
 @app.route('/<name>.<ext>')
 def page(name, ext):
-    if name == "resume":
-        if ext == "pdf":
-            return send_from_directory(
-                app.config['CONTENT_PATH'], '%s.%s' % ("resume", "pdf")
-            )
-        elif ext == "md":
-            file = '{}/{}.md'.format(app.config['CONTENT_PATH'], name)
-            return helpers.get_flatfile_or_404(file)
-        else:
-            # Handle special alignment cases for resume
-            p = flatpages.get(name)
-            p.body = re.sub('\\\\Date {(.*?)}', r"<time>\g<1></time>", p.body)
-            return render_template('page.html', post=p, site=app.config)
-    elif ext == "html":
+    if ext == "html":
         p = flatpages.get(name)
         if helpers.is_published(p):
+            if 'footer' in p.meta:
+                setattr(p, 'footer', helpers.pandoc_markdown(p.meta['footer']))
             return render_template('page.html', post=p, site=app.config)
         else:
             abort(404)
-    elif ext == "txt":
-        file = "./%s/%s.txt" % (app.config['CONTENT_PATH'], name)
+    elif ext in ['txt', 'md']:
+        file = '{}/{}.{}'.format(app.config['CONTENT_PATH'], name, ext)
         return helpers.get_flatfile_or_404(file)
-    elif ext == "md":
-        file = '{}/{}.md'.format(app.config['CONTENT_PATH'], name)
-        return helpers.get_flatfile_or_404(file)
+    elif ext == "pdf":
+        return send_from_directory(
+            app.config['CONTENT_PATH'], '%s.%s' % (name, "pdf")
+        )
     else:
         abort(404)
 
@@ -131,11 +115,20 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
         updates = reversed(helpers.get_updates())
         date_ordered = {}
         for u in updates:
+            u['html'] = helpers.pandoc_markdown(u['text'])
             d = u['date'].strftime('%Y-%m-%d')
-            if d in date_ordered:
-                date_ordered[d].insert(0, u)
+            if d in date_ordered and u.get('featured') is True:
+                date_ordered[d].setdefault('featured',[]).insert(
+                    len(date_ordered[d]['featured']), u
+                )
+            elif d in date_ordered and u.get('featured') is not True:
+                date_ordered[d].setdefault('regular',[]).insert(
+                    0, u
+                )
+            elif u.get('featured') is True:
+                    date_ordered[d] = {'featured': [u]}
             else:
-                date_ordered[d] = [u]
+                date_ordered[d] = {'regular': [u]}
         return render_template('updates.html', updates=date_ordered,
                                site=app.config)
 
@@ -152,4 +145,4 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html', site=app.config), 404
+    return render_template('404.html')
