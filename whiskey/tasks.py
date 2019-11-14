@@ -3,6 +3,7 @@ import subprocess
 import click
 import datetime
 import yaml
+import shutil
 from whiskey import app, freezer, helpers
 from fabric.network import disconnect_all
 from fabric.contrib.project import rsync_project
@@ -60,18 +61,32 @@ def backup_using_fabric():
 
 
 @task
-def freeze_to_build():
+def freeze_to_build(skip_existing):
     app.config['PUBLISH_MODE'] = True
+    app.config.update(FREEZER_SKIP_EXISTING=skip_existing)
+
+    pages = [u for u in freezer.all_urls()]
+    deduped_pages = []
+    for i in pages:
+        if i not in deduped_pages:
+            deduped_pages.append(i)
+
     with click.progressbar(
             freezer.freeze_yield(),
-            item_show_func=lambda p: p.url if p else 'Done!') as urls:
+            length=len(deduped_pages) + 1,
+            show_pos=True,
+            width=30,
+            show_eta=False,
+            show_percent=True,
+            # item_show_func=lambda p: p.url if p else 'Done!'
+    ) as urls:
         for url in urls:
             # everything is already happening, just pass
             pass
 
 
 @task
-def generate_resume_pdf(output):
+def generate_resume_pdf(output="sites/personal/content/resume.pdf"):
     try:
         print(
             ("\033[0;33m[whiskey]:\033[0;0m "
@@ -82,6 +97,7 @@ def generate_resume_pdf(output):
             ["pandoc",
              "-f", "markdown",
              "-t", "latex",
+             "--filter=align-right.py",
              "--pdf-engine=xelatex",
              "--variable=subparagraph",
              "--template=sites/personal/templates/resume.tex",
@@ -106,3 +122,14 @@ def add_update(text, featured):
 
     with open(fname, "a") as f:
         yaml.dump(u, f, default_flow_style=False)
+
+
+@task
+def clean_assets():
+    paths_to_clean = [
+        'sites/%s/static/.webassets-cache' % app.config['SITE_NAME'],
+        'sites/%s/static/gen' % app.config['SITE_NAME']
+    ]
+    for path in paths_to_clean:
+        if os.path.exists(path):
+            shutil.rmtree(path)

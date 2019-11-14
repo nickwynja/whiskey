@@ -2,9 +2,10 @@ import yaml
 import glob
 import os
 import tarfile
+import pypandoc
 from flask import abort
 from flask_babel import format_datetime
-from whiskey import app, flatpages, markdown
+from whiskey import app, flatpages
 
 
 def get_posts():
@@ -28,6 +29,15 @@ def get_featured_posts():
             is True]
 
 
+def pandoc_markdown(md):
+    return pypandoc.convert_text(
+        md,
+        'html',
+        format='md',
+        filters=['poetic']
+    )
+
+
 def get_updates(featured=False):
     f = "%s/updates.yaml" % app.config['CONTENT_PATH']
 
@@ -39,10 +49,6 @@ def get_updates(featured=False):
                                if u.get('featured', False) is True]
                 else:
                     updates = yaml.safe_load(stream)
-                for i, u in enumerate(updates):
-                    md = """<div class=\"markdown-wrapper\"
-                            markdown=\"block\">%s</div>""" % u['text']
-                    updates[i]['html'] = markdown(md)
                 return updates
             except yaml.YAMLError as exc:
                 print(exc)

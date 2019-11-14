@@ -1,4 +1,4 @@
-from whiskey import app, flatpages, markdown, helpers
+from whiskey import app, flatpages, helpers
 import urllib.parse
 from flask import url_for
 from pytz import timezone
@@ -33,8 +33,8 @@ def feed():
                  updated=timezone(tz).localize(
                      p.meta.get('updated', p.meta['date'])),
                  published=timezone(tz).localize(p.meta['date']),
-                 summary=h.unescape(markdown(
-                     post.meta.get('description', ''))),
+                 summary=h.unescape(
+                     post.meta.get('description', '')),
                  content=h.unescape(post.html)
                  )
     return feed.get_response()
@@ -61,7 +61,7 @@ def feed_updates():
                      u['date'].strftime('%Y-%m-%d_%H%M%S')),
                  updated=timezone(tz).localize(u['date']),
                  published=timezone(tz).localize(u['date']),
-                 content="%s" % h.unescape(u['html'])
+                 content="%s" % h.unescape(helpers.pandoc_markdown(u['text']))
                  )
     return feed.get_response()
 
@@ -85,7 +85,7 @@ def feed_all():
                      u['date'].strftime('%Y-%m-%d_%H%M%S')),
                  updated=timezone(tz).localize(u['date']),
                  published=timezone(tz).localize(u['date']),
-                 content="%s" % h.unescape(u['html'])
+                 content="%s" % h.unescape(helpers.pandoc_markdown(u['text']))
                  )
     posts = helpers.get_posts()
     for p in posts:
@@ -112,6 +112,6 @@ def feed_all():
                  updated=timezone(tz).localize(
                      p.meta.get('updated', p.meta['date'])),
                  published=timezone(tz).localize(p.meta['date']),
-                 content=h.unescape(markdown(md))
+                 content=h.unescape(helpers.pandoc_markdown(md))
                  )
     return feed.get_response()

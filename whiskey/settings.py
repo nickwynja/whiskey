@@ -1,7 +1,4 @@
 from whiskey import app
-from whiskey.formatter import poetic_formatter
-import mkdcomments
-import mdx_poetic
 import os
 
 site_path = '%s/sites/%s' % (os.path.dirname(app.root_path),
@@ -22,47 +19,9 @@ app.config.update(
     PUBLISH_MODE=False
 )
 
-app.config['MARKDOWN_EXTENSIONS'] = [
-    'smarty',
-    'pymdownx.extrarawhtml',
-    mdx_poetic.PoeticExtension()
-
-]
-
-FLATPAGES_AUTO_RELOAD = True
 FLATPAGES_EXTENSION = '.md'
 FLATPAGES_ROOT = app.config['CONTENT_PATH']
-TEMPLATES_AUTO_RELOAD = True
 FREEZER_DESTINATION = app.config['BUILD_PATH']
-FREEZER_IGNORE_404_NOT_FOUND = True
-FREEZER_IGNORE_404_FOR_URLS = ['/404.html']
 FREEZER_RELATIVE_URLS = True
 FREEZER_IGNORE_MIMETYPE_WARNINGS = True
-
-FLATPAGES_MARKDOWN_EXTENSIONS = [
-    'footnotes',
-    'toc',
-    'extra',
-    'smarty',
-    'sane_lists',
-    'pymdownx.critic',
-    mkdcomments.CommentsExtension(),
-    'pymdownx.superfences',
-]
-
-FLATPAGES_EXTENSION_CONFIGS = {
-    'footnotes': {
-        'UNIQUE_IDS': 'True'
-    },
-    "pymdownx.superfences": {
-        "custom_fences": [{
-            "name": "poem",
-            "class": "mdx-poem",
-            "format": poetic_formatter
-        }, {
-            "name": "poemItalic",
-            "class": "mdx-poem italic",
-            "format": poetic_formatter
-        }]
-    }
-}
+FREEZER_STATIC_IGNORE = ['*.DS_Store']
