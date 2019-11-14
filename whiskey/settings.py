@@ -4,7 +4,7 @@ import mkdcomments
 import mdx_poetic
 import os
 
-site_path = '%s/sites/%s' % (os.path.dirname(app.root_path),
+site_path = '%s/sites/%s' % (os.getcwd(),
                              os.environ['WHISKEY_SITE'])
 # Set defaults which can be overriden in site.conf
 app.config.update(
