@@ -1,7 +1,6 @@
 from whiskey import app, tasks, flatpages, helpers
 from fabric.tasks import execute
 import click
-import subprocess
 
 
 @app.cli.command()
@@ -18,18 +17,27 @@ def drafts():
 
 
 @app.cli.command()
-@click.confirmation_option(help='Do you want to build and publish?')
-def publish():
+@click.confirmation_option(
+    prompt='Do you want to build and publish \"%s\" site?'
+    % (app.config['SITE_NAME']))
+@click.option('-s', '--skip-existing',
+              is_flag=True,
+              default=False)
+def publish(skip_existing):
     """Builds the site and deploys to server"""
-    subprocess.run(["flask", "assets", "clean"])
-    execute(tasks.freeze_to_build)
+    execute(tasks.clean_assets)
+    execute(tasks.freeze_to_build, skip_existing)
     execute(tasks.deploy_using_rsync)
 
 
 @app.cli.command()
-def build():
+@click.option('-s', '--skip-existing',
+              is_flag=True,
+              default=False)
+def build(skip_existing):
     """Builds the site and all files"""
-    execute(tasks.freeze_to_build)
+    execute(tasks.clean_assets)
+    execute(tasks.freeze_to_build, skip_existing)
 
 
 @app.cli.command()
@@ -37,7 +45,8 @@ def reload():
     """Runs a livereload server"""
     from livereload import Server
     server = Server(app.wsgi_app)
-    server.watch('sites/personal/content/resume.md', tasks.generate_resume_pdf)
+    server.watch('%s/resume.md' % app.config['CONTENT_PATH'],
+                 tasks.generate_resume_pdf)
     server.watch(app.config['CONTENT_PATH'])
     server.serve(host='0.0.0.0', port=5000, debug=True)
 
@@ -56,7 +65,7 @@ def backup():
 
 @app.cli.command()
 @click.option('-o', '--output',
-              default="sites/personal/content/resume.pdf",
+              default="%s/resume.pdf" % app.config['CONTENT_PATH'],
               type=str)
 def resume(output):
     """Generates PDF of resume using pandoc"""
