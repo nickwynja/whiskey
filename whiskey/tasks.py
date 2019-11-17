@@ -117,7 +117,7 @@ def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
 
 @task
 def add_update(text, featured):
-    fname = "{}/{}".format(app.config['CONTENT_PATH'], "updates.yaml")
+    fname = "{}/{}".format(app.config['DATA_PATH'], "updates.yaml")
     d = datetime.datetime.now()
     u = [{"date": d.replace(microsecond=0),
           "featured": featured,

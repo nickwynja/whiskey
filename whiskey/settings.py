@@ -14,6 +14,7 @@ app.config.from_pyfile('%s/.whiskeyconfig' % site_path)
 app.config.update(
     SITE_NAME=app.config['TITLE'],
     CONTENT_PATH='%s/content' % site_path,
+    DATA_PATH='%s/data' % site_path,
     BUILD_PATH='%s/build' % site_path,
     STATIC_FOLDER='%s/src/static' % site_path,
     TEMPLATE_PATH='%s/src/templates' % site_path,

@@ -39,7 +39,7 @@ def pandoc_markdown(md):
 
 
 def get_updates(featured=False):
-    f = "%s/updates.yaml" % app.config['CONTENT_PATH']
+    f = "%s/updates.yaml" % app.config['DATA_PATH']
 
     if os.path.exists(f):
         with open(f, 'r') as stream:
