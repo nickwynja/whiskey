@@ -18,6 +18,7 @@ babel = Babel(app)
 flatpages = FlatPages(app)
 FlatPagesPandoc(app.config['PANDOC_MD_FORMAT'],
                 app,
+                pandoc_args=app.config['PANDOC_ARGS'],
                 filters=app.config['PANDOC_FILTERS']
                 )
 freezer = Freezer(app)

@@ -7,6 +7,7 @@ app.config.update(
     TIMEZONE='US/Eastern',
     FEATURED_POSTS_COUNT=3,
     RECENT_POSTS_COUNT=10,
+    PANDOC_ARGS=[],
     PANDOC_FILTERS=[],
     PANDOC_MD_FORMAT="markdown"
 )
