@@ -4,6 +4,7 @@ import click
 import datetime
 import yaml
 import shutil
+import sys
 from whiskey import app, freezer, helpers
 from fabric.network import disconnect_all
 from fabric.contrib.project import rsync_project
@@ -69,18 +70,23 @@ def freeze_to_build(skip_existing):
         if i not in deduped_pages:
             deduped_pages.append(i)
 
-    with click.progressbar(
-            freezer.freeze_yield(),
-            length=len(deduped_pages) + 1,
-            show_pos=True,
-            width=30,
-            show_eta=False,
-            show_percent=True,
-            # item_show_func=lambda p: p.url if p else 'Done!'
-    ) as urls:
-        for url in urls:
-            # everything is already happening, just pass
-            pass
+    if sys.stdout.isatty():
+        with click.progressbar(
+                freezer.freeze_yield(),
+                length=len(deduped_pages) + 1,
+                show_pos=True,
+                width=30,
+                show_eta=False,
+                show_percent=True,
+                # item_show_func=lambda p: p.url if p else 'Done!'
+        ) as urls:
+            for url in urls:
+                # everything is already happening, just pass
+                pass
+    else:
+        print("Freezing site...")
+        for g in freezer.freeze_yield():
+            print("     Froze %s" % g.path)
 
 
 @task
@@ -101,7 +107,7 @@ def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
              "-f", "markdown",
              "-t", "latex",
              filters,
-             "--pdf-engine=xelatex",
+             "--pdf-engine=lualatex",
              "--variable=subparagraph",
              "--template=%s/resume.tex" % app.config['TEMPLATE_PATH'],
              "--top-level-division=chapter",  # lets h2 to be heading
@@ -113,6 +119,7 @@ def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
     except subprocess.CalledProcessError as ex:
         print("\033[0;31m ERROR \033[0;0m")
         print("\nPandoc failed with error code", ex.returncode)
+        sys.exit(ex.returncode)
 
 
 @task
