@@ -41,5 +41,6 @@ setup(
         "pypandoc",
         "webassets",
         "webassets-libsass",
+        "rcssmin"
     ],
 )

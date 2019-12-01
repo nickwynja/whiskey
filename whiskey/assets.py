@@ -1,6 +1,16 @@
 import os
+import sass
+import rcssmin
 from whiskey import app, assets
 from flask_assets import Bundle
+
+
+@app.context_processor
+def inject_dict_for_all_templates():
+    css = ""
+    with open('src/styles/style.scss', 'r') as scss:
+        css = sass.compile(string=scss.read())
+    return dict(cssmin=rcssmin.cssmin(css))
 
 
 app.static_folder = app.config['STATIC_FOLDER']
