@@ -8,9 +8,12 @@ from flask_assets import Bundle
 @app.context_processor
 def inject_dict_for_all_templates():
     css = ""
-    with open('src/styles/style.scss', 'r') as scss:
-        css = sass.compile(string=scss.read())
-    return dict(cssmin=rcssmin.cssmin(css))
+    try:
+        with open('src/styles/style.scss', 'r') as scss:
+            css = sass.compile(string=scss.read())
+        return dict(cssmin=rcssmin.cssmin(css))
+    except:
+        return dict(cssmin="")
 
 
 app.static_folder = app.config['STATIC_FOLDER']
