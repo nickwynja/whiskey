@@ -66,7 +66,9 @@ def feed_updates():
                      u['date'].strftime('%Y-%m-%d_%H%M%S')),
                  updated=timezone(tz).localize(u['date']),
                  published=timezone(tz).localize(u['date']),
-                 content="%s" % u['html'] if 'html' in u else h.unescape(helpers.pandoc_markdown(u['text']))
+                 content="%s" % (
+                     u['html'] if 'html' in u
+                     else h.unescape(helpers.pandoc_markdown(u['text'])))
                  )
     return feed.get_response()
 
@@ -90,7 +92,9 @@ def feed_all():
                      u['date'].strftime('%Y-%m-%d_%H%M%S')),
                  updated=timezone(tz).localize(u['date']),
                  published=timezone(tz).localize(u['date']),
-                 content="%s" % u['html'] if 'html' in u else h.unescape(helpers.pandoc_markdown(u['text']))
+                 content="%s" % (
+                     u['html'] if 'html' in u
+                     else h.unescape(helpers.pandoc_markdown(u['text'])))
                  )
     posts = helpers.get_posts()
     for p in posts:
@@ -104,11 +108,11 @@ def feed_all():
                 url_for('nested_content', name=p.slug,
                         dir=app.config['POST_DIRECTORY'], ext='html'))
         html = ("<b>{}</b>&nbsp;&bull;&nbsp;<span>{}</span>&nbsp;"
-              "<a href=\"{}\">{}</a>".format(
-                  p.meta['title'],
-                  post.meta.get('description', ""),
-                  url,
-                  app.config['BASE_NAME']))
+                "<a href=\"{}\">{}</a>".format(
+                    p.meta['title'],
+                    post.meta.get('description', ""),
+                    url,
+                    app.config['BASE_NAME']))
         feed.add(p.meta['date'],
                  content_type='html',
                  author=p.meta.get('author', app.config.get('AUTHOR', "")),

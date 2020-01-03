@@ -12,7 +12,7 @@ def inject_dict_for_all_templates():
         with open('src/styles/style.scss', 'r') as scss:
             css = sass.compile(string=scss.read())
         return dict(cssmin=rcssmin.cssmin(css))
-    except:
+    except BaseException:
         return dict(cssmin="")
 
 

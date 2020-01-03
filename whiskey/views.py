@@ -115,7 +115,8 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
         updates = reversed(helpers.get_updates())
         date_ordered = {}
         for u in updates:
-            u['html'] = u['html'] if 'html' in u else helpers.pandoc_markdown(u['text'])
+            u['html'] = (u['html'] if 'html' in u
+                         else helpers.pandoc_markdown(u['text']))
             d = u['date'].strftime('%Y-%m-%d')
             if d in date_ordered and u.get('featured') is True:
                 date_ordered[d].setdefault('featured', []).insert(
