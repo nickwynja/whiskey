@@ -103,9 +103,8 @@ def feed_all():
                 app.config['BASE_URL'],
                 url_for('nested_content', name=p.slug,
                         dir=app.config['POST_DIRECTORY'], ext='html'))
-        md = ("<div markdown=\"block\">"
-              "<b>{}</b>&nbsp;&bull;&nbsp;<span>{}</span>&nbsp;"
-              "<a href=\"{}\">{}</a></div>".format(
+        html = ("<b>{}</b>&nbsp;&bull;&nbsp;<span>{}</span>&nbsp;"
+              "<a href=\"{}\">{}</a>".format(
                   p.meta['title'],
                   post.meta.get('description', ""),
                   url,
@@ -117,6 +116,6 @@ def feed_all():
                  updated=timezone(tz).localize(
                      p.meta.get('updated', p.meta['date'])),
                  published=timezone(tz).localize(p.meta['date']),
-                 content=h.unescape(helpers.pandoc_markdown(md))
+                 content=h.unescape(html)
                  )
     return feed.get_response()

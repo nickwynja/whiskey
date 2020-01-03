@@ -73,7 +73,7 @@ def freeze_to_build(skip_existing):
     if sys.stdout.isatty():
         with click.progressbar(
                 freezer.freeze_yield(),
-                length=len(deduped_pages) + 1,
+                length=len(deduped_pages),
                 show_pos=True,
                 width=30,
                 show_eta=False,
