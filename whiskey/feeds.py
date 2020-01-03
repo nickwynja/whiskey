@@ -16,7 +16,7 @@ def feed():
                     author=app.config.get('AUTHOR', ""),
                     url=app.config['BASE_URL'])
     posts = helpers.get_posts()
-    for p in posts:
+    for p in posts[:10]:
         post = flatpages.get(p.path)
         if ('POST_LINK_STYLE' in app.config
                 and app.config['POST_LINK_STYLE'] == "date"):
@@ -35,6 +35,11 @@ def feed():
                  published=timezone(tz).localize(p.meta['date']),
                  summary=h.unescape(
                      post.meta.get('description', '')),
+                 # It takes a while to render all of the HTML here but
+                 # then at least it is in memory and the rest of the
+                 # build process goes quickly. The rendering has to
+                 # happen anyway so there isn't any performance increase
+                 # by not including the full HTML here in content.
                  content=h.unescape(post.html)
                  )
     return feed.get_response()
@@ -61,7 +66,7 @@ def feed_updates():
                      u['date'].strftime('%Y-%m-%d_%H%M%S')),
                  updated=timezone(tz).localize(u['date']),
                  published=timezone(tz).localize(u['date']),
-                 content="%s" % h.unescape(helpers.pandoc_markdown(u['text']))
+                 content="%s" % u['html'] if 'html' in u else h.unescape(helpers.pandoc_markdown(u['text']))
                  )
     return feed.get_response()
 
@@ -85,7 +90,7 @@ def feed_all():
                      u['date'].strftime('%Y-%m-%d_%H%M%S')),
                  updated=timezone(tz).localize(u['date']),
                  published=timezone(tz).localize(u['date']),
-                 content="%s" % h.unescape(helpers.pandoc_markdown(u['text']))
+                 content="%s" % u['html'] if 'html' in u else h.unescape(helpers.pandoc_markdown(u['text']))
                  )
     posts = helpers.get_posts()
     for p in posts:

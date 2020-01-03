@@ -40,9 +40,9 @@ all_css = Bundle(
 
 assets.register('css_all', all_css)
 
-for files in os.walk('/src/js/'):
+for files in os.walk('src/js/'):
     if files:
-        js = Bundle('../src/js/*.js',
+        js = Bundle('../js/*.js',
                     filters='jsmin',
                     output='gen/bundle.%(version)s.js'
                     )
