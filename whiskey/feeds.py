@@ -32,6 +32,7 @@ def feed():
 
         entry = feed.add_entry()
         entry.title(p.meta['title'])
+        entry.guid(guid=url, permalink=True)
         entry.author(name=p.meta.get('author', app.config.get('AUTHOR', "")))
         entry.link(href=url)
         entry.updated(timezone(tz).localize(p.meta.get('updated', p.meta['date'])))
@@ -45,7 +46,7 @@ def feed():
         # by not including the full HTML here in content.
         entry.content(h.unescape(post.html))
 
-    return Response(feed.rss_str(pretty=True), mimetype="text/xml")
+    return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")
 
 
 @app.route('/updates.rss')
@@ -64,6 +65,7 @@ def feed_updates():
     for u in updates:
         entry = feed.add_entry()
         entry.title(u['date'].strftime("%Y-%m-%d %H:%M:%S %z"))
+        entry.id(u['date'].strftime("%Y-%m-%d %H:%M:%S %z"))
         entry.author(name=app.config.get('AUTHOR', ""))
         entry.link(href="{}/updates.html#{}".format(
                          app.config['BASE_URL'],
@@ -73,7 +75,7 @@ def feed_updates():
         entry.content("%s" % (
                          u['html'] if 'html' in u
                          else h.unescape(helpers.pandoc_markdown(u['text']))))
-    return Response(feed.rss_str(pretty=True), mimetype="text/xml")
+    return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")
 
 
 @app.route('/all.rss')
@@ -92,6 +94,7 @@ def feed_all():
     for u in updates:
         entry = feed.add_entry()
         entry.title(u['date'].strftime("%Y-%m-%d %H:%M:%S %z"))
+        entry.id(u['date'].strftime("%Y-%m-%d %H:%M:%S %z"))
         entry.author(name=app.config.get('AUTHOR', ""))
         entry.link(href="{}/updates.html#{}".format(
                          app.config['BASE_URL'],
@@ -121,6 +124,7 @@ def feed_all():
                     app.config['BASE_NAME']))
         entry = feed.add_entry()
         entry.title(p.meta['date'].strftime("%Y-%m-%d %H:%M:%S %z"))
+        entry.guid(guid=url, permalink=True)
         entry.author(name=p.meta.get('author', app.config.get('AUTHOR', "")))
         entry.link(href=url)
         entry.updated(timezone(tz).localize(p.meta.get('updated', p.meta['date'])))
@@ -129,4 +133,4 @@ def feed_all():
             post.meta.get('description', '')))
         entry.content(h.unescape(html))
 
-    return Response(feed.rss_str(pretty=True), mimetype="text/xml")
+    return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")
