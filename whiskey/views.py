@@ -136,7 +136,7 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
                                site=app.config)
 
     @app.route("/archive.html")
-    @app.route("/%s/" % app.config['POST_DIRECTORY'])
+    @app.route("/%s/index.html" % app.config['POST_DIRECTORY'])
     def archive():
         posts = helpers.get_posts()
         return render_template('archive.html', posts=posts,
