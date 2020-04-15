@@ -26,7 +26,8 @@ def index():
         latest_update = updates[-1] if updates else None
         latest_update['html'] = (latest_update['html'] if 'html' in
                                  latest_update else
-                                 helpers.pandoc_markdown(latest_update['text']))
+                                 helpers.pandoc_markdown(
+                                     latest_update['text']))
         return render_template('index_hybrid.html',
                                post=page,
                                directory=app.config['POST_DIRECTORY'],

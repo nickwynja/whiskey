@@ -33,7 +33,8 @@ def feed():
         entry.guid(guid=url, permalink=True)
         entry.author(name=p.meta.get('author', app.config.get('AUTHOR', "")))
         entry.link(href=url)
-        entry.updated(timezone(tz).localize(p.meta.get('updated', p.meta['date'])))
+        entry.updated(timezone(tz).localize(
+            p.meta.get('updated', p.meta['date'])))
         entry.published(timezone(tz).localize(p.meta['date']))
         entry.description(post.meta.get('description', ''))
         # It takes a while to render all of the HTML here but
@@ -52,7 +53,8 @@ def feed_updates():
 
     feed = FeedGenerator()
     feed.title('Updates from %s' % app.config['TITLE'])
-    feed.link(href=app.config['BASE_URL'] + url_for('feed_updates'), rel='self')
+    feed.link(
+        href=app.config['BASE_URL'] + url_for('feed_updates'), rel='self')
     feed.subtitle(app.config.get('DESCRIPTION', ""))
     feed.author(name=app.config.get('AUTHOR', ""))
     feed.link(href=app.config['BASE_URL'], rel='alternate')
@@ -64,13 +66,13 @@ def feed_updates():
         entry.id(u['date'].strftime("%Y-%m-%d %H:%M:%S %z"))
         entry.author(name=app.config.get('AUTHOR', ""))
         entry.link(href="{}/updates.html#{}".format(
-                         app.config['BASE_URL'],
-                         u['date'].strftime('%Y-%m-%d_%H%M%S')))
+            app.config['BASE_URL'],
+            u['date'].strftime('%Y-%m-%d_%H%M%S')))
         entry.updated(timezone(tz).localize(u['date']))
         entry.published(timezone(tz).localize(u['date']))
         entry.content("%s" % (
-                         u['html'] if 'html' in u
-                         else helpers.pandoc_markdown(u['text'])))
+            u['html'] if 'html' in u
+            else helpers.pandoc_markdown(u['text'])))
     return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")
 
 
@@ -93,13 +95,13 @@ def feed_all():
             'title': u['date'].strftime("%Y-%m-%d %H:%M:%S %z"),
             'author': app.config.get('AUTHOR', ""),
             'link': "{}/updates.html#{}".format(
-                         app.config['BASE_URL'],
-                         u['date'].strftime('%Y-%m-%d_%H%M%S')),
+                app.config['BASE_URL'],
+                u['date'].strftime('%Y-%m-%d_%H%M%S')),
             'updated': timezone(tz).localize(u['date']),
             'published': timezone(tz).localize(u['date']),
             'content': "%s" % (
-                         u['html'] if 'html' in u
-                         else helpers.pandoc_markdown(u['text']))
+                u['html'] if 'html' in u
+                else helpers.pandoc_markdown(u['text']))
         })
 
     for p in posts:
@@ -122,7 +124,8 @@ def feed_all():
             'title': p.meta['date'].strftime("%Y-%m-%d %H:%M:%S %z"),
             'author': p.meta.get('author', app.config.get('AUTHOR', "")),
             'link': url,
-            'updated': timezone(tz).localize(p.meta.get('updated', p.meta['date'])),
+            'updated': timezone(tz).localize(
+                p.meta.get('updated', p.meta['date'])),
             'published': timezone(tz).localize(p.meta['date']),
             'content': html
         })
