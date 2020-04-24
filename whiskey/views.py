@@ -150,3 +150,8 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', site=app.config)
+
+
+@app.errorhandler(403)
+def page_forbidden(e):
+    return render_template('403.html', site=app.config)
