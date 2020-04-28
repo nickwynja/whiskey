@@ -1,6 +1,7 @@
 from flask import render_template, abort, send_from_directory
 import os
 import re
+import mimetypes
 from whiskey import app, flatpages
 
 from whiskey import helpers
@@ -83,9 +84,15 @@ def nested_content(name, ext, dir=None, year=None, month=None):
                                            site=app.config)
             else:
                 abort(404)
-    elif ext == "md":
-        file = '{}/{}.md'.format(app.config['CONTENT_PATH'], path)
-        return helpers.get_flatfile_or_404(file)
+    elif ext in ["md", "pdf", "epub"]:
+        path = "{}/{}".format(app.config['CONTENT_PATH'], dir)
+        filename = "{}.{}".format(name, ext)
+        file = '{}/{}'.format(path, filename)
+        mime = mimetypes.guess_type(file)[0]
+        if mime in ["application/pdf", "application/epub+zip"]:
+            return send_from_directory(path, filename, as_attachment=True)
+        else:
+            return helpers.get_flatfile_or_404(file)
     else:
         abort(404)
 

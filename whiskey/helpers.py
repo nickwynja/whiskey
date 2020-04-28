@@ -109,6 +109,8 @@ def list_files_in_dir(dir, root_only=None):
     else:
         files = glob.glob("%s/**/*.md" % dir, recursive=True)
         files.extend(glob.glob("%s/**/*.txt" % dir, recursive=True))
+        files.extend(glob.glob("%s/**/*.epub" % dir, recursive=True))
+        files.extend(glob.glob("%s/**/*.pdf" % dir, recursive=True))
     for file in files:
         files_to_yield.append(file.replace('%s/' % dir, ''))
     for page in files_to_yield:
