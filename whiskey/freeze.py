@@ -20,3 +20,8 @@ def page():
 @freezer.register_generator
 def page_not_found():
     yield "/404.html"
+
+
+@freezer.register_generator
+def page_forbidden():
+    yield "/403.html"
