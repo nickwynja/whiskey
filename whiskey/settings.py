@@ -1,7 +1,7 @@
 from whiskey import app
-import os
+import pathlib
 
-site_path = '%s' % (os.getcwd())
+site_path = f"{pathlib.Path().resolve()}"
 # Set defaults which can be overriden in site.conf
 app.config.update(
     TIMEZONE='US/Eastern',
