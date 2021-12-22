@@ -34,7 +34,7 @@ def pandoc_markdown(md):
         md,
         'html',
         format='md',
-        filters=['poetic']
+        filters=app.config['PANDOC_FILTERS']
     )
 
 

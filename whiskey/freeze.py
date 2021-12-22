@@ -16,6 +16,9 @@ def page():
         for file in files:
             yield file
 
+        ## also build resume pdf
+        yield {'name': 'resume', 'dir': '', 'ext': 'pdf'}
+
 
 @freezer.register_generator
 def page_not_found():

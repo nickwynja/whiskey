@@ -110,6 +110,62 @@ def page(name, ext):
             return render_template('page.html', post=p, site=app.config)
         else:
             abort(404)
+    elif name == "resume" and ext == "pdf":
+        p = flatpages.get(name)
+        import pypandoc
+        from weasyprint import HTML, CSS
+        from weasyprint.text.fonts import FontConfiguration
+
+        resume_html =  pypandoc.convert_file(
+             "%s/resume.md" % app.config['CONTENT_PATH'],
+            'html',
+            format='md'
+        )
+
+        font_config = FontConfiguration()
+        header = f"""
+        <h1>{app.config['AUTHOR']}</h1>
+        <div class="header">
+            <a href="https://{p.meta['website']}">{p.meta['website']}</a>
+            <span class="align-right">{p.meta['location']}</span>
+        </div>
+        <div class="header">
+            <a href="mailto:{p.meta['email']}">{p.meta['email']}</a>
+            <span class="align-right">{p.meta['phone']}</span>
+        </div>
+        """
+        html = HTML(string=f"{header}{resume_html}")
+        css = CSS(string="""
+        body {
+          font-family: "Open Sans";
+          line-height: 1.4;
+          text-align: justify;
+          text-justify: inter-word;
+        }
+
+        h1 { margin-bottom: 0; }
+
+        ul ul {
+            list-style-type: disc;
+        }
+
+        .header { color: grey; }
+        .header a { color: grey; text-decoration: none; }
+
+        p a { color: black; text-decoration: none; }
+
+        .align-right { float: right; }
+        @page { size: A3; margin: 1.5cm }
+                """)
+
+        html.write_pdf(
+            f"{app.config['CONTENT_PATH']}/{name}.pdf",
+            stylesheets=[css],
+                  font_config=font_config
+                )
+        return send_from_directory(
+            app.config['CONTENT_PATH'], '%s.%s' % (name, "pdf")
+        )
     elif ext in ['txt', 'md']:
         file = '{}/{}.{}'.format(app.config['CONTENT_PATH'], name, ext)
         return helpers.get_flatfile_or_404(file)

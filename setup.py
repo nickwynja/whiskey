@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='whiskey-flask',
-    version='0.2.5',
+    version='0.3.1',
     author="Nick Wynja",
     author_email="nick@nickwynja.com",
     description="Whiskey makes writing happen.",
@@ -42,6 +42,8 @@ setup(
         "pypandoc",
         "webassets",
         "webassets-libsass",
-        "rcssmin"
+        "rcssmin",
+        "weasyprint",
+        "six"
     ],
 )

@@ -5,6 +5,7 @@ import datetime
 import yaml
 import shutil
 import sys
+import pypandoc
 from whiskey import app, freezer, helpers
 from fabric.network import disconnect_all
 from fabric.contrib.project import rsync_project
@@ -89,37 +90,22 @@ def freeze_to_build(skip_existing):
             print("     Froze %s" % g.path)
 
 
-@task
-def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
-    try:
-        print(
-            ("\033[0;33m[whiskey]:\033[0;0m "
-             "Generating resume pdf with pandoc\n"
-             "           to %s...         " % output),
-            end="", flush=True)
+# @task
+# def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
+#     try:
+#         print(
+#             (
+#              "Generating resume pdf with weasyprint\n"
+#              "           to %s...         " % output),
+#             end="", flush=True)
 
-        filters = ""
-        for f in app.config['PANDOC_FILTERS_RESUME']:
-            filters += "--filter=%s" % f
 
-        subprocess.check_output(
-            ["pandoc",
-             "-f", "markdown",
-             "-t", "latex",
-             filters,
-             "--pdf-engine=lualatex",
-             "--variable=subparagraph",
-             "--template=%s/resume.tex" % app.config['TEMPLATE_PATH'],
-             "--top-level-division=chapter",  # lets h2 to be heading
-             "%s/resume.md" % app.config['CONTENT_PATH'],
-             "-o", output
-             ]
-        )
-        print("\033[0;32m DONE \033[0;0m")
-    except subprocess.CalledProcessError as ex:
-        print("\033[0;31m ERROR \033[0;0m")
-        print("\nPandoc failed with error code", ex.returncode)
-        sys.exit(ex.returncode)
+#         print("done")
+
+#     except subprocess.CalledProcessError as ex:
+#         print("\033[0;31m ERROR \033[0;0m")
+#         print("\nPandoc failed with error code", ex.returncode)
+#         sys.exit(ex.returncode)
 
 
 @task
