@@ -39,23 +39,24 @@ def pandoc_markdown(md):
 
 
 def get_updates(featured=False):
-    f = "%s/updates.yaml" % app.config['DATA_PATH']
+    updates = []
+    files = glob.glob(f"{app.config['DATA_PATH']}/updates/*.yaml") # list of all .yaml files in a directory
+    files.sort(key=os.path.getmtime)
 
-    if os.path.exists(f):
-        with open(f, 'r') as stream:
+    for file in files:
+        with open(file, 'r') as stream:
             try:
-                if featured:
-                    updates = [u for u in yaml.safe_load(stream)
-                               if u.get('featured', False) is True]
-                else:
-                    updates = yaml.safe_load(stream)
-                return updates
+                updates.append(yaml.safe_load(stream))
             except yaml.YAMLError as exc:
                 print(exc)
-            except EnvironmentError:
-                return ""
-    else:
-        return []
+
+
+        # read_yaml_file(file)
+    if featured:
+       updates = [u for u in updates
+                  if u.get('featured', False) is True]
+
+    return updates
 
 
 def format_date(value):

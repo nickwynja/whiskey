@@ -90,33 +90,15 @@ def freeze_to_build(skip_existing):
             print("     Froze %s" % g.path)
 
 
-# @task
-# def generate_resume_pdf(output="%s/resume.pdf" % app.config['CONTENT_PATH']):
-#     try:
-#         print(
-#             (
-#              "Generating resume pdf with weasyprint\n"
-#              "           to %s...         " % output),
-#             end="", flush=True)
-
-
-#         print("done")
-
-#     except subprocess.CalledProcessError as ex:
-#         print("\033[0;31m ERROR \033[0;0m")
-#         print("\nPandoc failed with error code", ex.returncode)
-#         sys.exit(ex.returncode)
-
-
 @task
 def add_update(text, featured):
-    fname = "{}/{}".format(app.config['DATA_PATH'], "updates.yaml")
     d = datetime.datetime.now()
-    u = [{"date": d.replace(microsecond=0),
+    fname = f"{app.config['DATA_PATH']}/updates/{d.strftime('%Y%m%d%H%M%S')}.yaml"
+    u = {"date": d.replace(microsecond=0),
           "featured": featured,
-          "text": literal_unicode(text)}]
+          "text": literal_unicode(text)}
 
-    with open(fname, "a") as f:
+    with open(fname, "w") as f:
         yaml.dump(u, f, default_flow_style=False)
 
 

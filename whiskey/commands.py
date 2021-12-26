@@ -49,8 +49,6 @@ def reload():
     if 'WATCH_FILES' in app.config:
         for f in app.config['WATCH_FILES']:
             server.watch(os.path.expanduser(f))
-    server.watch('%s/resume.md' % app.config['CONTENT_PATH'],
-                 tasks.generate_resume_pdf)
     server.watch(app.config['CONTENT_PATH'])
     server.serve(host='0.0.0.0', port=5000, debug=True)
 
@@ -65,15 +63,6 @@ def deploy():
 def backup():
     """Backs up site to local server"""
     execute(tasks.backup_using_fabric)
-
-
-@app.cli.command()
-@click.option('-o', '--output',
-              default="%s/resume.pdf" % app.config['CONTENT_PATH'],
-              type=str)
-def resume(output):
-    """Generates PDF of resume using pandoc"""
-    execute(tasks.generate_resume_pdf, output)
 
 
 @app.cli.command()
