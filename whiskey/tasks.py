@@ -87,7 +87,9 @@ def freeze_to_build(skip_existing):
     else:
         print("Freezing site...")
         for g in freezer.freeze_yield():
-            print("     Froze %s" % g.path)
+            # everything is already happening, just pass
+            pass
+        print("frozen!")
 
 
 @task
