@@ -137,6 +137,7 @@ def page(name, ext):
         html = HTML(string=f"{header}{resume_html}")
         css = CSS(string="""
         body {
+          font-size: 69%;
           font-family: "Open Sans";
           line-height: 1.4;
           text-align: justify;
@@ -144,6 +145,10 @@ def page(name, ext):
         }
 
         h1 { margin-bottom: 0; }
+
+        ul {
+            padding-left: 25px;
+        }
 
         ul ul {
             list-style-type: disc;
@@ -155,7 +160,7 @@ def page(name, ext):
         p a { color: black; text-decoration: none; }
 
         .align-right { float: right; }
-        @page { size: A3; margin: 1.5cm }
+        @page { size: letter; margin: 1cm 1.5cm 1cm 1cm;  }
                 """)
 
         html.write_pdf(
