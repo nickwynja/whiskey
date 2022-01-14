@@ -40,18 +40,23 @@ def pandoc_markdown(md):
 
 def get_updates(featured=False):
     updates = []
+    featured_updates = []
     files = sorted(glob.glob(f"{app.config['DATA_PATH']}/updates/*.yaml"))
 
     for file in files:
         with open(file, 'r') as stream:
             try:
-                updates.append(yaml.safe_load(stream))
+                y = yaml.safe_load(stream)
+                y['filename'] = file
+                if y.get('published', True) is True:
+                    updates.append(y)
+                if y.get('featured', False) is True:
+                    featured_updates.append(y)
             except yaml.YAMLError as exc:
                 print(exc)
 
     if featured:
-       updates = [u for u in updates
-                  if u.get('featured', False) is True]
+        return featured_updates
 
     return updates
 

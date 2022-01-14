@@ -189,6 +189,9 @@ if app.config['SITE_STYLE'] in ("blog", "hybrid"):
         updates = reversed(helpers.get_updates())
         date_ordered = {}
         for u in updates:
+            if u.get('text'):
+                app.logger.debug(f"{os.path.basename(u['filename'])} is \
+converted from markdown which slows down page load time")
             u['html'] = (u['html'] if 'html' in u
                          else helpers.pandoc_markdown(u['text']))
             d = u['date'].strftime('%Y-%m-%d')
