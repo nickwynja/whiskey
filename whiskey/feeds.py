@@ -1,8 +1,12 @@
 from whiskey import app, flatpages, helpers
 import urllib.parse
+import glob
+import datetime
+import os
 from flask import url_for, Response
 from pytz import timezone
 from feedgen.feed import FeedGenerator
+from pathlib import Path
 
 
 @app.route('/feed.rss')
@@ -141,3 +145,37 @@ def feed_all():
         entry.description(i['content'])
 
     return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")
+
+@app.route('/log.xml')
+def log():
+    tz = app.config['TIMEZONE']
+    desc = ""
+
+    feed = FeedGenerator()
+    feed.title(f"{app.config.get('AUTHOR')}'s Journey Log")
+    feed.link(href=app.config['BASE_URL'] + url_for('log'), rel='self')
+    feed.subtitle(app.config.get('DESCRIPTION', ""))
+    feed.author(name=app.config.get('AUTHOR', ""))
+    feed.id(feed.title())
+    feed.link(href=app.config['BASE_URL'], rel='alternate')
+
+    for file in glob.glob("./data/log/*.md"):
+        with open(file) as f:
+            p = Path(f.name)
+            d = p.with_suffix('')
+            dt = datetime.datetime.strptime(str(d), 'data/log/%Y%m%d%H%M%S')
+            log = f.read()
+
+        first_line = log.split("\n")[0]
+        if first_line.startswith("#"):
+            desc = first_line.split("#")[-1].strip()
+
+        entry = feed.add_entry()
+        local = timezone(tz).localize(dt)
+        entry.title(datetime.datetime.strftime(local, '%a %b %d %Y at %H:%M:%S %Z'))
+        entry.id(str(d))
+        entry.published(local)
+        entry.summary(desc)
+        entry.content(log)
+
+    return Response(feed.atom_str(pretty=True), mimetype="application/atom+xml")

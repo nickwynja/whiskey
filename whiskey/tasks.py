@@ -103,6 +103,13 @@ def add_update(text, featured):
     with open(fname, "w") as f:
         yaml.dump(u, f, default_flow_style=False)
 
+@task
+def add_entry():
+    d = datetime.datetime.now()
+    fname = f"{app.config['DATA_PATH']}/log/{d.strftime('%Y%m%d%H%M%S')}.md"
+    with open(fname, "w") as f:
+        f.write("")
+    print(f"created {fname}")
 
 @task
 def clean_assets():

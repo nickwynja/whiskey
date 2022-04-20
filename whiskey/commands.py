@@ -73,3 +73,8 @@ def backup():
 def update(text, featured):
     """Adds a status update from command line"""
     execute(tasks.add_update, text, featured)
+
+@app.cli.command()
+def log():
+    """Creates log entry"""
+    execute(tasks.add_entry)
