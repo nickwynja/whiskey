@@ -3,6 +3,7 @@ import urllib.parse
 import glob
 import datetime
 import os
+import pypandoc
 from flask import url_for, Response
 from pytz import timezone
 from feedgen.feed import FeedGenerator
@@ -161,9 +162,8 @@ def log():
 
     for file in glob.glob("./data/log/*.md"):
         with open(file) as f:
-            p = Path(f.name)
-            d = p.with_suffix('')
-            dt = datetime.datetime.strptime(str(d), 'data/log/%Y%m%d%H%M%S')
+            d = Path(f.name).stem
+            dt = datetime.datetime.strptime(d, '%Y%m%d%H%M%S')
             log = f.read()
 
         first_line = log.split("\n")[0]
@@ -173,9 +173,9 @@ def log():
         entry = feed.add_entry()
         local = timezone(tz).localize(dt)
         entry.title(datetime.datetime.strftime(local, '%a %b %d %Y at %H:%M:%S %Z'))
-        entry.id(str(d))
+        entry.id(d)
         entry.published(local)
         entry.summary(desc)
-        entry.content(log)
+        entry.content(pypandoc.convert_text(log, 'html', format='md'), type="html")
 
     return Response(feed.atom_str(pretty=True), mimetype="application/atom+xml")

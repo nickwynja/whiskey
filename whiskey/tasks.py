@@ -109,7 +109,7 @@ def add_entry():
     fname = f"{app.config['DATA_PATH']}/log/{d.strftime('%Y%m%d%H%M%S')}.md"
     with open(fname, "w") as f:
         f.write("")
-    print(f"created {fname}")
+    print(fname)
 
 @task
 def clean_assets():
