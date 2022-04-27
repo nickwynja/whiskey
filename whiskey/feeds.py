@@ -149,33 +149,27 @@ def feed_all():
 
 @app.route('/log.xml')
 def log():
-    tz = app.config['TIMEZONE']
-    desc = ""
-
     feed = FeedGenerator()
-    feed.title(f"{app.config.get('AUTHOR')}'s Journey Log")
+    feed.title(f"{app.config.get('AUTHOR')}'s Log")
     feed.link(href=app.config['BASE_URL'] + url_for('log'), rel='self')
     feed.subtitle(app.config.get('DESCRIPTION', ""))
     feed.author(name=app.config.get('AUTHOR', ""))
     feed.id(feed.title())
     feed.link(href=app.config['BASE_URL'], rel='alternate')
 
-    for file in glob.glob("./data/log/*.md"):
+    files = sorted(glob.glob("./data/log/*.md"))
+
+    for idx, file in enumerate(files):
         with open(file) as f:
             d = Path(f.name).stem
-            dt = datetime.datetime.strptime(d, '%Y%m%d%H%M%S')
-            log = f.read()
+            t = datetime.datetime.strptime(d, '%Y%m%d%H%M%S%z')
+            l = f.read()
 
-        first_line = log.split("\n")[0]
-        if first_line.startswith("#"):
-            desc = first_line.split("#")[-1].strip()
 
         entry = feed.add_entry()
-        local = timezone(tz).localize(dt)
-        entry.title(datetime.datetime.strftime(local, '%a %b %d %Y at %H:%M:%S %Z'))
+        entry.title(f"#{str(idx+1).zfill(4)}")
         entry.id(d)
-        entry.published(local)
-        entry.summary(desc)
-        entry.content(pypandoc.convert_text(log, 'html', format='md'), type="html")
+        entry.published(t)
+        entry.content(pypandoc.convert_text(l, 'html', format='md'), type="html")
 
     return Response(feed.atom_str(pretty=True), mimetype="application/atom+xml")

@@ -105,8 +105,8 @@ def add_update(text, featured):
 
 @task
 def add_entry():
-    d = datetime.datetime.now()
-    fname = f"{app.config['DATA_PATH']}/log/{d.strftime('%Y%m%d%H%M%S')}.md"
+    n = datetime.datetime.now().astimezone().strftime("%Y%m%d%H%M%S%z")
+    fname = f"{app.config['DATA_PATH']}/log/{n}.md"
     with open(fname, "w") as f:
         f.write("")
     print(fname)
