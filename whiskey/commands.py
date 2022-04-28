@@ -1,5 +1,4 @@
 from whiskey import app, tasks, flatpages, helpers
-from fabric.tasks import execute
 import click
 import os
 
@@ -26,9 +25,9 @@ def drafts():
               default=False)
 def publish(skip_existing):
     """Builds the site and deploys to server"""
-    execute(tasks.clean_assets)
-    execute(tasks.freeze_to_build, skip_existing)
-    execute(tasks.deploy_using_rsync)
+    tasks.clean_assets()
+    tasks.freeze_to_build(skip_existing)
+    tasks.deploy_using_rsync()
 
 
 @app.cli.command()
@@ -37,8 +36,8 @@ def publish(skip_existing):
               default=False)
 def build(skip_existing):
     """Builds the site and all files"""
-    execute(tasks.clean_assets)
-    execute(tasks.freeze_to_build, skip_existing)
+    tasks.clean_assets()
+    tasks.freeze_to_build(skip_existing)
 
 
 @app.cli.command()
@@ -53,16 +52,16 @@ def reload():
     server.serve(host='0.0.0.0', port=5000, debug=True)
 
 
-@app.cli.command()
-def deploy():
-    """Deploys site using rsync"""
-    execute(tasks.deploy_using_rsync)
+# @app.cli.command()
+# def deploy():
+#     """Deploys site using rsync"""
+#     execute(tasks.deploy_using_rsync)
 
 
-@app.cli.command()
-def backup():
-    """Backs up site to local server"""
-    execute(tasks.backup_using_fabric)
+# @app.cli.command()
+# def backup():
+#     """Backs up site to local server"""
+#     execute(tasks.backup_using_fabric()
 
 
 @app.cli.command()
@@ -72,9 +71,9 @@ def backup():
 @click.argument('text', required=True)
 def update(text, featured):
     """Adds a status update from command line"""
-    execute(tasks.add_update, text, featured)
+    asks.add_update(text, featured)
 
 @app.cli.command()
 def log():
     """Creates log entry"""
-    execute(tasks.add_entry)
+    tasks.add_entry()

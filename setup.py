@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='whiskey-flask',
-    version='0.5.0',
+    version='0.6.0',
     author="Nick Wynja",
     author_email="nick@nickwynja.com",
     description="Whiskey makes writing happen.",
@@ -22,16 +22,11 @@ setup(
         "flask",
         "click",
         "configparser",
-        "cssmin",
-        "Fabric3",
         "feedgen",
         "flask_flatpages",
         "frozen-flask",
-        "Flask-Assets",
         "Flask-Babel",
         "Jinja2",
-        "jsmin",
-        "libsass",
         "livereload",
         "Markdown",
         "MarkupSafe",
@@ -40,10 +35,6 @@ setup(
         "pytz",
         "python-dotenv",
         "pypandoc",
-        "webassets",
-        "webassets-libsass",
-        "rcssmin",
         "weasyprint",
-        "six"
     ],
 )

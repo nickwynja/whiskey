@@ -7,9 +7,6 @@ import shutil
 import sys
 import pypandoc
 from whiskey import app, freezer, helpers
-from fabric.network import disconnect_all
-from fabric.contrib.project import rsync_project
-from fabric.api import hosts, task, put, puts
 
 
 class literal_unicode(str):
@@ -23,44 +20,6 @@ def literal_unicode_representer(dumper, data):
 yaml.add_representer(literal_unicode, literal_unicode_representer)
 
 
-@hosts('%s@%s:%s' % (app.config.get('DEPLOY_USER', None),
-                     app.config.get('DEPLOY_HOST', None),
-                     app.config.get('DEPLOY_PORT', None)))
-@task
-def deploy_using_rsync():
-    try:
-        rsync_project(local_dir="%s/build/" % os.getcwd(),
-                      remote_dir=app.config['DEPLOY_DIR'],
-                      delete=True)
-    finally:
-        disconnect_all()
-
-
-@hosts('%s@%s:%s' % (app.config.get('BACKUP_USER', None),
-                     app.config.get('BACKUP_HOST', None),
-                     app.config.get('BACKUP_PORT', None)))
-@task
-def backup_using_fabric():
-    '''Backup build and content files'''
-    puts("Compressing `build` and `content`")
-    today = datetime.datetime.now().strftime('%Y_%m_%d')
-    build_tar = "/tmp/%s_build.tar.gz" % today
-    content_tar = "/tmp/%s_content.tar.gz" % today
-    helpers.make_tarfile(build_tar, "%s/build" % os.getcwd())
-    helpers.make_tarfile(content_tar, "./content")
-    puts("...done")
-
-    try:
-        put(build_tar, app.config['BACKUP_DIR'])
-        put(content_tar, app.config['BACKUP_DIR'])
-    finally:
-        disconnect_all()
-
-    os.remove(build_tar)
-    os.remove(content_tar)
-
-
-@task
 def freeze_to_build(skip_existing):
     app.config['PUBLISH_MODE'] = True
     app.config.update(FREEZER_SKIP_EXISTING=skip_existing)
@@ -92,7 +51,6 @@ def freeze_to_build(skip_existing):
         print("frozen!")
 
 
-@task
 def add_update(text, featured):
     d = datetime.datetime.now()
     fname = f"{app.config['DATA_PATH']}/updates/{d.strftime('%Y%m%d%H%M%S')}.yaml"
@@ -103,15 +61,10 @@ def add_update(text, featured):
     with open(fname, "w") as f:
         yaml.dump(u, f, default_flow_style=False)
 
-@task
 def add_entry():
     n = datetime.datetime.now().astimezone().strftime("%Y%m%d%H%M%S%z")
-    fname = f"{app.config['DATA_PATH']}/log/{n}.md"
-    with open(fname, "w") as f:
-        f.write("")
-    print(fname)
+    print(f"{app.config['DATA_PATH']}/log/{n}.md")
 
-@task
 def clean_assets():
     paths_to_clean = [
         'src/static/.webassets-cache',

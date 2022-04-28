@@ -168,8 +168,9 @@ def log():
 
         entry = feed.add_entry()
         entry.title(f"#{str(idx+1).zfill(4)}")
-        entry.id(d)
+        entry.id(d.split("-")[0])
         entry.published(t)
+        entry.author(name=app.config.get('AUTHOR', ""))
         entry.content(pypandoc.convert_text(l, 'html', format='md'), type="html")
 
     return Response(feed.atom_str(pretty=True), mimetype="application/atom+xml")
