@@ -159,18 +159,16 @@ def log():
 
     files = sorted(glob.glob("./data/log/*.md"))
 
-    for idx, file in enumerate(files):
+    for file in files:
         with open(file) as f:
             d = Path(f.name).stem
             t = datetime.datetime.strptime(d, '%Y%m%d%H%M%S%z')
             l = f.read()
 
-
         entry = feed.add_entry()
-        entry.title(f"#{str(idx+1).zfill(4)}")
         entry.id(d.split("-")[0])
         entry.published(t)
         entry.author(name=app.config.get('AUTHOR', ""))
         entry.content(pypandoc.convert_text(l, 'html', format='md'), type="html")
 
-    return Response(feed.atom_str(pretty=True), mimetype="application/atom+xml")
+    return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")
