@@ -71,7 +71,7 @@ def reload():
 @click.argument('text', required=True)
 def update(text, featured):
     """Adds a status update from command line"""
-    asks.add_update(text, featured)
+    tasks.add_update(text, featured)
 
 @app.cli.command()
 def log():
