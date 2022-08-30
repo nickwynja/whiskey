@@ -126,12 +126,12 @@ def page(name, ext):
         header = f"""
         <h1>{app.config['AUTHOR']}</h1>
         <div class="header">
-            <a href="https://{p.meta['website']}">{p.meta['website']}</a>
-            <span class="align-right">{p.meta['location']}</span>
-        </div>
-        <div class="header">
-            <a href="mailto:{p.meta['email']}">{p.meta['email']}</a>
-            <span class="align-right">{p.meta['phone']}</span>
+            <div class="header-left">
+                {" ".join(f"<div>{x}</div>" for x in p.meta.get('header', {}).get('left', {}))}
+            </div>
+            <div class="header-right">
+                {" ".join(f"<div>{x}</div>" for x in p.meta.get('header', {}).get('right', {}))}
+            </div>
         </div>
         """
         html = HTML(string=f"{header}{resume_html}")
@@ -145,6 +145,15 @@ def page(name, ext):
         }
 
         h1 { margin-bottom: 0; }
+
+        .header {
+          display: flex;
+        }
+
+        .header-right {
+          margin-left: auto;
+          text-align: right;
+        }
 
         ul {
             padding-left: 25px;
