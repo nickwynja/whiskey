@@ -119,7 +119,9 @@ def page(name, ext):
         resume_html =  pypandoc.convert_file(
              "%s/resume.md" % app.config['CONTENT_PATH'],
             'html',
-            format='md'
+            format=app.config['PANDOC_MD_FORMAT'],
+            filters=app.config['PANDOC_FILTERS_RESUME'],
+            extra_args=app.config['PANDOC_ARGS']
         )
 
         font_config = FontConfiguration()
