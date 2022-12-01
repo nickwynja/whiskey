@@ -3,9 +3,11 @@ import glob
 import os
 import tarfile
 import pypandoc
+import datetime
 from flask import abort
 from flask_babel import format_datetime
 from whiskey import app, flatpages
+from pathlib import Path
 
 
 def get_posts():
@@ -37,6 +39,19 @@ def pandoc_markdown(md):
         filters=app.config['PANDOC_FILTERS']
     )
 
+def get_latest_log():
+    updates = []
+    file = sorted(glob.glob(f"{app.config['DATA_PATH']}/log/*"))[-1]
+
+    with open(file, 'r') as f:
+        date = datetime.datetime.strptime(Path(f.name).stem, '%Y%m%d%H%M%S%z')
+        content = f.read()
+        if Path(f.name).suffix == ".md":
+            entry = pypandoc.convert_text(content, 'html', format='md')
+        else:
+            entry = l
+
+    return (date,entry)
 
 def get_updates(featured=False):
     updates = []
@@ -84,9 +99,8 @@ def is_hidden(post):
 def is_published_or_draft(post):
     '''returns True/False based on `published` metadata in post'''
     if (post is not None
-            and (('published' in post.meta and post.meta['published'] is True)
-                 or ('status' in post.meta
-                     and post.meta['status'].lower() == "draft")
+            and (post.meta.get('published', False) is True
+                 or post.meta.get('status', "").lower() == "draft"
                  )):
         return post
 

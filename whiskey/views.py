@@ -116,16 +116,22 @@ def page(name, ext):
         from weasyprint import HTML, CSS
         from weasyprint.text.fonts import FontConfiguration
 
-        resume_html =  pypandoc.convert_file(
-             "%s/resume.md" % app.config['CONTENT_PATH'],
-            'html',
-            format=app.config['PANDOC_MD_FORMAT'],
-            filters=app.config['PANDOC_FILTERS_RESUME'],
-            extra_args=app.config['PANDOC_ARGS']
-        )
+        try:
+            resume_html =  pypandoc.convert_file(
+                 "%s/resume.md" % app.config['CONTENT_PATH'],
+                'html',
+                format=app.config['PANDOC_MD_FORMAT'],
+                filters=app.config['PANDOC_FILTERS_RESUME'],
+                extra_args=app.config['PANDOC_ARGS']
+            )
+        except:
+            abort(404)
 
         font_config = FontConfiguration()
         header = f"""
+        <head>
+        <title>{app.config['AUTHOR']}'s Resume</title>
+        </head>
         <h1>{app.config['AUTHOR']}</h1>
         <div class="header">
             <div class="header-left">
@@ -219,6 +225,12 @@ converted from markdown which slows down page load time")
             else:
                 date_ordered[d] = {'regular': [u]}
         return render_template('updates.html', updates=date_ordered,
+                               site=app.config)
+
+    @app.route("/log.html")
+    def log_index():
+        date, entry = helpers.get_latest_log()
+        return render_template('log.html', entry=entry, date=date,
                                site=app.config)
 
     @app.route("/archive.html")

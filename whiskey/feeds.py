@@ -157,7 +157,7 @@ def log():
     feed.id(feed.title())
     feed.link(href=app.config['BASE_URL'], rel='alternate')
 
-    files = sorted(glob.glob("./data/log/*.md"))
+    files = sorted(glob.glob("./data/log/*"))
 
     for file in files:
         with open(file) as f:
@@ -169,6 +169,9 @@ def log():
         entry.id(d.split("-")[0])
         entry.published(t)
         entry.author(name=app.config.get('AUTHOR', ""))
-        entry.content(pypandoc.convert_text(l, 'html', format='md'), type="html")
+        if Path(f.name).suffix == ".md":
+            entry.content(pypandoc.convert_text(l, 'html', format='md'), type="html")
+        else:
+            entry.content(l, type="html")
 
     return Response(feed.rss_str(pretty=True), mimetype="application/rss+xml")

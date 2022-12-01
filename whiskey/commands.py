@@ -49,7 +49,7 @@ def reload():
         for f in app.config['WATCH_FILES']:
             server.watch(os.path.expanduser(f))
     server.watch(app.config['CONTENT_PATH'])
-    server.serve(host='0.0.0.0', port=5000, debug=True)
+    server.serve(host='0.0.0.0', port=5001, debug=True)
 
 
 # @app.cli.command()
