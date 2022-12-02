@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='whiskey-flask',
-    version='0.7.0',
+    version='0.7.1',
     author="Nick Wynja",
     author_email="nick@nickwynja.com",
     description="Whiskey makes writing happen.",
@@ -27,7 +27,6 @@ setup(
         "frozen-flask",
         "Flask-Babel",
         "Jinja2",
-        "livereload",
         "Markdown",
         "MarkupSafe",
         "panflute",
@@ -37,4 +36,7 @@ setup(
         "pypandoc",
         "weasyprint",
     ],
+    console_scripts=[
+        "livereload",
+    ]
 )
