@@ -85,6 +85,11 @@ def format_month_year(value):
     '''takes a date obj and returns in November 2016 format'''
     return format_datetime(value, 'LLLL yyyy')
 
+def format_date_tz(value):
+    ast = value.astimezone()
+    date = ast.strftime("%B %-d, %Y")
+    time = ast.strftime("%H:%M %Z")
+    return f"<span class='date'>{date}</span> <span class='time'>{time}</span>"
 
 def is_published(post):
     '''returns True/False based on `published` metadata in post'''

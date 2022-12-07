@@ -10,3 +10,4 @@ app.jinja_loader = jinja2.ChoiceLoader([
 
 app.jinja_env.filters['datetime'] = helpers.format_date
 app.jinja_env.filters['datetime_month_year'] = helpers.format_month_year
+app.jinja_env.filters['datetime_tz'] = helpers.format_date_tz
