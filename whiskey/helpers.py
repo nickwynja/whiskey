@@ -44,7 +44,7 @@ def get_latest_log():
     file = sorted(glob.glob(f"{app.config['DATA_PATH']}/log/*"))[-1]
 
     with open(file, 'r') as f:
-        date = datetime.datetime.strptime(Path(f.name).stem, '%Y%m%d%H%M%S%z')
+        date = Path(f.name).stem
         content = f.read()
         if Path(f.name).suffix == ".md":
             entry = pypandoc.convert_text(content, 'html', format='md')
@@ -86,10 +86,8 @@ def format_month_year(value):
     return format_datetime(value, 'LLLL yyyy')
 
 def format_date_tz(value):
-    ast = value.astimezone()
-    date = ast.strftime("%B %-d, %Y")
-    time = ast.strftime("%H:%M %Z")
-    return f"<span class='date'>{date}</span> <span class='time'>{time}</span>"
+    date = datetime.datetime.strptime(value, '%Y%m%d%H%M%S%z')
+    return date.strftime("<span class='date'>%B %-d, %Y</span> <span class='time'>%H:%M %z</span>")
 
 def is_published(post):
     '''returns True/False based on `published` metadata in post'''
