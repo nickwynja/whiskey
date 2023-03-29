@@ -21,6 +21,7 @@ def get_posts():
     for idx, p in enumerate(posts):
         slug = p.path.replace('{}/'.format(app.config['POST_DIRECTORY']), '')
         setattr(posts[idx], 'slug', slug)
+        setattr(posts[idx], 'year', p['date'].strftime('%Y'))
     return posts
 
 
@@ -41,9 +42,12 @@ def pandoc_markdown(md):
 
 def get_latest_log():
     updates = []
-    file = sorted(glob.glob(f"{app.config['DATA_PATH']}/log/*"))[-1]
+    files = sorted(glob.glob(f"{app.config['DATA_PATH']}/log/*"))
 
-    with open(file, 'r') as f:
+    if len(files) == 0:
+        return (None, None)
+
+    with open(files[-1], 'r') as f:
         date = Path(f.name).stem
         content = f.read()
         if Path(f.name).suffix == ".md":

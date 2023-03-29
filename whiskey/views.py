@@ -143,42 +143,7 @@ def page(name, ext):
         </div>
         """
         html = HTML(string=f"{header}{resume_html}")
-        css = CSS(string="""
-        body {
-          font-size: 69%;
-          font-family: "Open Sans";
-          line-height: 1.4;
-          text-align: justify;
-          text-justify: inter-word;
-        }
-
-        h1 { margin-bottom: 0; }
-
-        .header {
-          display: flex;
-        }
-
-        .header-right {
-          margin-left: auto;
-          text-align: right;
-        }
-
-        ul {
-            padding-left: 25px;
-        }
-
-        ul ul {
-            list-style-type: disc;
-        }
-
-        .header { color: grey; }
-        .header a { color: grey; text-decoration: none; }
-
-        p a { color: black; text-decoration: none; }
-
-        .align-right { float: right; }
-        @page { size: letter; margin: 1cm 1.5cm 1cm 1cm;  }
-                """)
+        css = CSS(f"{app.config['STATIC_FOLDER']}/css/resume.css")
 
         html.write_pdf(
             f"{app.config['CONTENT_PATH']}/{name}.pdf",
@@ -230,6 +195,10 @@ converted from markdown which slows down page load time")
     @app.route("/log.html")
     def log_index():
         date, entry = helpers.get_latest_log()
+
+        if not entry:
+            abort(404)
+
         return render_template('log.html', entry=entry, date=date,
                                site=app.config)
 
