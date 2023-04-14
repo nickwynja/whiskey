@@ -156,12 +156,10 @@ def page(name, ext):
     elif ext in ['txt', 'md']:
         file = '{}/{}.{}'.format(app.config['CONTENT_PATH'], name, ext)
         return helpers.get_flatfile_or_404(file)
-    elif ext == "pdf":
-        return send_from_directory(
-            app.config['CONTENT_PATH'], '%s.%s' % (name, "pdf")
-        )
     else:
-        abort(404)
+        return send_from_directory(
+            app.config['CONTENT_PATH'], '%s.%s' % (name, ext)
+        )
 
 
 if app.config['SITE_STYLE'] in ("blog", "hybrid"):
