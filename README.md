@@ -8,9 +8,7 @@
 * Built around flat Markdown files using the power of Pandoc
 * Built-in publish and backup functionalities
 * Command-line driven
-* Has an "update" post-style for tweet-like posts
-* Generates feeds of regular posts, update posts, and all posts so you
-  can integrate updates with sites like [micro.blog](https://micro.blog)
+* Generates feeds of regular posts, log entries posts
 
 ## Install
 
