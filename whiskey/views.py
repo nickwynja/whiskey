@@ -290,7 +290,7 @@ if app.config["DEPLOY_TYPE"] == "serve":
 
 @app.errorhandler(404)
 def page_not_found(e):
-    if not request.path.endswith(".html"):
+    if "." not in request.path:
         return redirect(f"{request.path}.html", code=301)
     else:
         return render_template('404.html', site=app.config)
