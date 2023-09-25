@@ -1,4 +1,4 @@
-from flask import render_template, abort, send_from_directory, request, Response
+from flask import render_template, abort, send_from_directory, request, Response, redirect
 import os
 import re
 import mimetypes
@@ -53,19 +53,19 @@ def index():
 @app.route('/<dir>/<name>.<ext>')
 def nested_content(name, ext, dir=None, year=None, month=None):
     if dir:
-        path = '{}/{}'.format(dir, name)
+        path = dir
     else:
         dir = app.config['POST_DIRECTORY']
         if year and month:
             month = "{:02d}".format(month)
-            path = '%s/%s/%s/%s' % (dir, year, month, name)
+            path = '%s/%s/%s' % (dir, year, month)
     if ext == "html":
-        if os.path.isfile('%s/%s.%s' % (
-                app.config['CONTENT_PATH'], path, ext)):
+        if os.path.isfile('%s/%s/%s.%s' % (
+                app.config['CONTENT_PATH'], path, name, ext)):
             return send_from_directory('%s/%s' % (
                 app.config['CONTENT_PATH'], dir), '%s.%s' % (name, ext))
         else:
-            page = flatpages.get(path)
+            page = flatpages.get(f"{path}/{name}")
             if helpers.is_published_or_draft(page):
                 if dir == app.config['POST_DIRECTORY']:
                     return render_template('post.html', post=page,
@@ -84,9 +84,11 @@ def nested_content(name, ext, dir=None, year=None, month=None):
             else:
                 abort(404)
     else:
-        path = "{}/{}".format(app.config['CONTENT_PATH'], dir)
+        path = "{}/{}".format(app.config['CONTENT_PATH'], path)
         filename = "{}.{}".format(name, ext)
         file = '{}/{}'.format(path, filename)
+        app.logger.debug(path)
+        app.logger.debug(file)
         if ext in ["md", "txt"]:
             return helpers.get_flatfile_or_404(file)
         else:
@@ -288,7 +290,10 @@ if app.config["DEPLOY_TYPE"] == "serve":
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html', site=app.config)
+    if not request.path.endswith(".html"):
+        return redirect(f"{request.path}.html", code=301)
+    else:
+        return render_template('404.html', site=app.config)
 
 
 @app.errorhandler(403)

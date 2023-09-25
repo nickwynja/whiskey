@@ -18,6 +18,10 @@ To install Whiskey, run:
 python3 -m pip install whiskey-flask
 ```
 
+```
+flask run --extra-files .whiskeyconfig
+```
+
 For an example site to get started, see
 [nickwynja/whiskey-example](https://github.com/nickwynja/whiskey-example). To
 see Whiskey in use, visit [nickwynja.com](https://nickwynja.com).
