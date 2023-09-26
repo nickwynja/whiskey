@@ -4,13 +4,17 @@ import glob
 import datetime
 import os
 import pypandoc
-from flask import url_for, Response
+from flask import url_for, Response, redirect
 from pytz import timezone
 from feedgen.feed import FeedGenerator
 from pathlib import Path
 
 
 @app.route('/feed.rss')
+def feed_redirect():
+    return redirect(url_for('feed'), code=301)
+
+@app.route('/feed.xml')
 def feed():
     tz = app.config['TIMEZONE']
     posts = helpers.get_posts()
