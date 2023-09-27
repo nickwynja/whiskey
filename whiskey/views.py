@@ -268,6 +268,7 @@ if app.config["DEPLOY_TYPE"] == "serve":
         for f in unpublish:
             app.logger.info("unpublishing " + f)
             os.remove(app.config['CONTENT_PATH'] + f)
+            flatpages.reload()
 
         return Response("UNPUBLISH OK", status=200)
 
