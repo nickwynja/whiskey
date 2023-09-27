@@ -3,6 +3,7 @@ import os
 import re
 import mimetypes
 import threading
+import pypandoc
 from rclone_python import rclone
 from whiskey import app, flatpages
 
@@ -85,12 +86,21 @@ def nested_content(name, ext, dir=None, year=None, month=None):
             else:
                 abort(404)
     else:
+        local_path = path
         path = "{}/{}".format(app.config['CONTENT_PATH'], path)
         filename = "{}.{}".format(name, ext)
         file = '{}/{}'.format(path, filename)
-        app.logger.debug(path)
-        app.logger.debug(file)
-        if ext in ["md", "txt"]:
+        if ext  == "md":
+            page = flatpages.get(f"{local_path}/{name}")
+            content =  pypandoc.convert_text(
+                page.body,
+                'gfm',
+                format='markdown-smart',
+                extra_args=app.config['PANDOC_ARGS']
+            )
+            return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+
+        elif ext == "txt":
             return helpers.get_flatfile_or_404(file)
         else:
             try:
@@ -111,7 +121,6 @@ def page(name, ext):
             abort(404)
     elif name == "cv" and ext == "pdf":
         p = flatpages.get(name)
-        import pypandoc
 
         try:
             html =  pypandoc.convert_file(
@@ -197,8 +206,17 @@ def page(name, ext):
         return send_from_directory(
             app.config['STATIC_FOLDER'], '%s.%s' % (name, "pdf")
         )
-    elif ext in ['txt', 'md']:
-        file = '{}/{}.{}'.format(app.config['CONTENT_PATH'], name, ext)
+    elif ext  == "md":
+        page = flatpages.get(name)
+        content =  pypandoc.convert_text(
+                page.body,
+                'gfm',
+                format='markdown-smart',
+                extra_args=app.config['PANDOC_ARGS']
+                )
+        return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+
+    elif ext == "txt":
         return helpers.get_flatfile_or_404(file)
     else:
         return send_from_directory(
