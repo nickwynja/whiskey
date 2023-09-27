@@ -13,6 +13,8 @@ from whiskey import app, flatpages
 from pathlib import Path
 from webdav3.client import Client
 from webdav3.exceptions import RemoteResourceNotFound
+from rclone_python import rclone
+from rclone_python.remote_types import RemoteTypes
 
 
 def get_posts():
@@ -171,10 +173,7 @@ def pull_content():
         pass
 
     if app.config['CONTENT_IN_PROGRESS'] is not True:
-        app.logger.info("pull initiated")
-        app.config["INITIAL_CONTENT_PULLED"] = False
-        app.config["CONTENT_IN_PROGRESS"] = True
-        app.logger.debug(f"last pull at: {status['CONTENT_LAST_PULL']}")
+        init_pull_config()
         file_list = []
         try:
             all_files = client.list(app.config["WEBDAV_DIR"],
@@ -217,10 +216,7 @@ def pull_content():
             app.logger.info("no content changes to pull")
 
 
-        app.config["CONTENT_LAST_PULL"] = datetime.datetime.utcnow()
-        app.config["INITIAL_CONTENT_PULLED"] = True
-        app.config["CONTENT_IN_PROGRESS"] = False
-        store_sync_status()
+        close_pull_config()
 
 
 def download_item(item):
@@ -287,3 +283,29 @@ def get_sync_status():
     except FileNotFoundError as e:
         app.logger.info("no sync status yet")
         return default_status
+
+def init_pull_config():
+    status = get_sync_status()
+    app.logger.info("pull initiated")
+    app.config["INITIAL_CONTENT_PULLED"] = False
+    app.config["CONTENT_IN_PROGRESS"] = True
+    app.logger.debug(f"last pull at: {status['CONTENT_LAST_PULL']}")
+
+def close_pull_config():
+    app.config["CONTENT_LAST_PULL"] = datetime.datetime.utcnow()
+    app.config["INITIAL_CONTENT_PULLED"] = True
+    app.config["CONTENT_IN_PROGRESS"] = False
+    store_sync_status()
+
+def rclone_content():
+    if app.config['CONTENT_IN_PROGRESS'] is not True:
+        init_pull_config()
+
+        rclone.copy(
+                f"fastmail:{app.config['WEBDAV_DIR']}",
+                app.config['CONTENT_PATH'],
+                ignore_existing=True, args=['--create-empty-src-dirs'])
+
+        app.logger.info(f"pull complete")
+        flatpages.reload()
+        close_pull_config()

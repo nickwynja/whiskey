@@ -3,6 +3,7 @@ import os
 import re
 import mimetypes
 import threading
+from rclone_python import rclone
 from whiskey import app, flatpages
 
 from whiskey import helpers
@@ -280,11 +281,16 @@ if app.config["DEPLOY_TYPE"] == "serve":
             app.logger.debug("CONTENT PATH symlinked")
             return Response("CAREFUL", status=418)
 
+        if rclone.is_installed():
+            target=helpers.rclone_content
+        else:
+            target=helpers.pull_content
+
         if app.config["INITIAL_CONTENT_PULLED"] is None:
-            threading.Thread(target=helpers.pull_content).start()
+            threading.Thread(target=target).start()
             return Response("NO", status=503)
         elif app.config["INITIAL_CONTENT_PULLED"] is False:
-            return Response("NO", status=503)
+            return Response("BUSY", status=503)
         else:
             return Response("OK", status=200)
 
