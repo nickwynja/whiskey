@@ -31,6 +31,5 @@ dependencies = [
   "ttf-opensans",
   "flask-compress",
   "rclone-python",
-  "webdavclient3@git+https://github.com/ezhov-evgeny/webdav-client-python-3#develop",
 ]
-version = "1.0.0"
+version = "1.0.0beta"
