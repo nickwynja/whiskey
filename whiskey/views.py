@@ -217,6 +217,10 @@ def page(name, ext):
         return content, 200, {'Content-Type': 'text/plain; charset=utf-8'}
 
     elif ext == "txt":
+        file = '{}/{}.{}'.format(
+                app.config['CONTENT_PATH'],
+                name,
+                ext)
         return helpers.get_flatfile_or_404(file)
     else:
         return send_from_directory(
