@@ -11,6 +11,7 @@ from pathlib import Path
 
 
 @app.route('/rss')
+@app.route('/feed')
 @app.route('/feed.rss')
 def feed_redirect():
     return redirect(url_for('feed'), code=301)
