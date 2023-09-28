@@ -5,6 +5,7 @@ import mimetypes
 import threading
 import pypandoc
 from rclone_python import rclone
+from random import randrange
 from whiskey import app, flatpages
 
 from whiskey import helpers
@@ -13,6 +14,12 @@ from whiskey import helpers
 @app.context_processor
 def inject_mode():
     return dict(editing=app.debug)
+
+@app.context_processor
+def inject_deployment():
+    return dict(
+            deploy_id=os.environ.get('RAILWAY_DEPLOYMENT_ID', randrange(999999))
+            )
 
 @app.after_request
 def add_header(response):
