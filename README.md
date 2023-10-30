@@ -19,7 +19,7 @@ python3 -m pip install whiskey-flask
 ```
 
 ```
-flask run --extra-files .whiskeyconfig
+flask run --debug --extra-files .whiskeyconfig
 ```
 
 For an example site to get started, see
