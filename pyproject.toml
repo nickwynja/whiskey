@@ -11,7 +11,7 @@ description = "Whiskey makes writing happen"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-  "flask",
+  "flask ~= 2.3",
   "click",
   "configparser",
   "feedgen",
